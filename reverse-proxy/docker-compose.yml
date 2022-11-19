@@ -1,0 +1,41 @@
+version: '3'
+services:
+  proxy:
+    build: ./
+    networks:
+      - site1
+      - site2
+    ports:
+      - 80:80
+  mysql:
+      image: mysql:8.0.29
+      restart: always
+      environment:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_USER: yasin
+          MYSQL_PASSWORD: 123456          
+      ports:
+          - 3306:3306
+      volumes:
+          - /home/nginx/public-html/database:/var/lib/mysql  
+          
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:5.0.4
+    environment:
+      VIRTUAL_PORT: 80
+      PMA_HOST: phpmyadmin
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 2G
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - 8083:80
+networks:
+  site1:
+    external:
+      name: site1_default
+  site2:
+    external:
+      name: site2_default
